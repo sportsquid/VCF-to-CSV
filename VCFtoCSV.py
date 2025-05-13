@@ -19,12 +19,12 @@ class Contact:
     business_fax = ""
     pager = ""
     mobile_phone = "" #supported
-    home_street = ""
+    home_street = "" #supported
     home_address_2 = ""
-    home_city = ""
-    home_state = ""
-    home_postal = ""
-    home_country = ""
+    home_city = "" #supported
+    home_state = "" #supported
+    home_postal = "" #supported
+    home_country = "" #supported
     business_address = ""
     business_address_2 = ""
     business_city = ""
@@ -35,7 +35,7 @@ class Contact:
     related_name = ""
     job_title = ""
     department = ""
-    organization = ""
+    organization = "" #supported
     notes = ""
     birthday = ""
     anniversary = ""
@@ -55,7 +55,7 @@ def select_import_file():
 
 def write_contact(contact, filepath):
     with open(filepath, 'a') as file:
-        file.write(f"{contact.first_name},{contact.last_name},{contact.display_name},{contact.nickname},{contact.email1},{contact.email2}, " \
+        file.write(f"{contact.first_name},{contact.last_name},{contact.display_name},{contact.nickname},{contact.email1},{contact.email2}," \
                     f"{contact.email3},{contact.home_phone},{contact.business_phone},{contact.home_fax},{contact.business_fax},{contact.pager}," \
                     f"{contact.mobile_phone},{contact.home_street},{contact.home_address_2},{contact.home_city},{contact.home_state},{contact.home_postal}," \
                     f"{contact.home_country},{contact.business_address},{contact.business_address_2},{contact.business_city},{contact.business_state},{contact.business_postal},{contact.business_country},{contact.country_code},{contact.related_name}," \
@@ -89,21 +89,34 @@ def convert_contacts():
             if(line.strip() == "END:VCARD"):
                 write_contact(current_contact, file_path)
                 current_contact = Contact()
+            #first and last name
             elif (line.strip().startswith("N:")):
                 current_contact.first_name = line.strip().split(";")[1]
                 current_contact.last_name = line.strip().split(";")[0].split(":")[1]
+            #home email
             elif(line.strip().startswith("EMAIL;type=INTERNET;type=HOME")):
                 current_contact.email1 = line.strip().split(":")[1]
+            #work email
             elif(line.strip().startswith("EMAIL;type=INTERNET;type=WORK")):
                 current_contact.email1 = line.strip().split(":")[1]
+            #home phone
             elif(line.strip().startswith("TEL;type=HOME")):
                 current_contact.home_phone = line.strip().split(":")[1]
+            #work phone
             elif(line.strip().startswith("TEL;type=WORK")):
                 current_contact.work_phone = line.strip().split(":")[1]
+            #cell phone
             elif(line.strip().startswith("TEL;type=CELL")):
                 current_contact.mobile_phone = line.strip().split(":")[1]
-            elif(line.strip().startswith()):
-                pass
+            #home address
+            elif(line.strip().startswith("item1.ADR;type=HOME")):
+                current_contact.home_street = line.strip().split(";")[4].replace("\\n", " ")
+                current_contact.home_city = line.strip().split(";")[5]
+                current_contact.home_state = line.strip().split(";")[6]
+                current_contact.home_postal = line.strip().split(";")[7]
+                current_contact.home_country = line.strip().split(";")[8]
+            elif(line.strip().startswith("ORG")):
+                current_contact.organization = line.strip().split(":")[1].replace(";", "")
     file_to_import.set("")
     messagebox.showinfo("Status", "Contacts Successfully Converted")
     
