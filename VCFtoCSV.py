@@ -52,6 +52,9 @@ def select_import_file():
     )
     file_to_import.set(file_path)
 
+def write_contact(contact):
+    pass
+
 #function to convert the CSV 
 def convert_contacts():
     file_path = filedialog.asksaveasfilename(
@@ -63,9 +66,18 @@ def convert_contacts():
     if(file_path == ""):
         convert_contacts()
         return
+    
+    #load entire file into list
+    lines = []
     with open(file_to_import, 'r') as file:
-        for line in file:
-            pass
+       current_contact = Contact()
+       for line in file:
+           if(line.strip() == "END:VCARD"):
+               pass
+           elif (line.strip().startswith("N:") != -1):
+               pass
+                
+    
     
 
 
