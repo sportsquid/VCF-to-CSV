@@ -1,23 +1,24 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+from tkinter import messagebox
 import os
 import sys
 
 class Contact:
-    first_name = ""
-    last_name = ""
+    first_name = "" #supported
+    last_name = "" #supported
     display_name = ""
     nickname = ""
-    email1 = ""
-    email2 = ""
+    email1 = "" #supported (Home)
+    email2 = "" #supported (Work)
     email3 = ""
-    home_phone= ""
-    business_phone = ""
+    home_phone= "" #supported
+    business_phone = "" #supported
     home_fax = ""
     business_fax = ""
     pager = ""
-    mobile_phone = ""
+    mobile_phone = "" #supported
     home_street = ""
     home_address_2 = ""
     home_city = ""
@@ -53,13 +54,13 @@ def select_import_file():
     file_to_import.set(file_path)
 
 def write_contact(contact, filepath):
-    with open(filepath, 'w') as file:
-        file.write(f"{contact.first_name}, {contact.last_name}, {contact.display_name}, {contact.nickname}, {contact.email1}, {contact.email2}, " \
-                    f"{contact.email3}, {contact.home_phone}, {contact.business_phone}, {contact.home_fax}, {contact.business_fax}, {contact.pager}," \
-                    f"{contact.mobile_phone}, {contact.home_street}, {contact.home_address2}, {contact.home_city}, {contact.home_state}, {contact.home_postal}," \
-                    f"{contact.home_country}, {contact.business_address}, {contact.business_address_2}, {contact.business_city}, {contact.business_state}, {contact.business_postal}, {contact.business_country}, {contact.country_code}, {contact.related_name}," \
-                    f"{contact.job_title}, {contact.department}, {contact.organization}, {contact.notes}, {contact.birthday}, {contact.anniversary}," \
-                    f"{contact.gender}, {contact.web_page}, {contact.web_page2}, {contact.categories}")
+    with open(filepath, 'a') as file:
+        file.write(f"{contact.first_name},{contact.last_name},{contact.display_name},{contact.nickname},{contact.email1},{contact.email2}, " \
+                    f"{contact.email3},{contact.home_phone},{contact.business_phone},{contact.home_fax},{contact.business_fax},{contact.pager}," \
+                    f"{contact.mobile_phone},{contact.home_street},{contact.home_address_2},{contact.home_city},{contact.home_state},{contact.home_postal}," \
+                    f"{contact.home_country},{contact.business_address},{contact.business_address_2},{contact.business_city},{contact.business_state},{contact.business_postal},{contact.business_country},{contact.country_code},{contact.related_name}," \
+                    f"{contact.job_title},{contact.department},{contact.organization},{contact.notes},{contact.birthday},{contact.anniversary}," \
+                    f"{contact.gender},{contact.web_page},{contact.web_page_2},{contact.categories}\n")
         return 
 
 #function to convert the CSV 
@@ -78,19 +79,34 @@ def convert_contacts():
         file.write("First Name,Last Name,Display Name,Nickname,E-mail Address,E-mail 2 Address,E-mail 3 Address,Home Phone,Business Phone,Home" \
                    "Fax,Business Fax,Pager,Mobile Phone,Home Street,Home Address 2,Home City,Home State,Home Postal Code,Home Country,Business Address," \
                    "Business Address 2,Business City,Business State,Business Postal Code,Business Country,Country Code,Related name,Job Title,Department,Organization," \
-                   "Notes,Birthday,Anniversary,Gender,Web Page,Web Page 2,Categories")
+                   "Notes,Birthday,Anniversary,Gender,Web Page,Web Page 2,Categories\n")
 
     #load entire file into list
     lines = []
-    with open(file_to_import, 'r') as file:
+    with open(file_to_import.get(), 'r') as file:
        current_contact = Contact()
        for line in file:
-           if(line.strip() == "END:VCARD"):
-               write_contact(current_contact, file_path)
-               current_contact = Contact()
-           elif (line.strip().startswith("N:") != -1):
-               pass
-                
+            if(line.strip() == "END:VCARD"):
+                write_contact(current_contact, file_path)
+                current_contact = Contact()
+            elif (line.strip().startswith("N:")):
+                current_contact.first_name = line.strip().split(";")[1]
+                current_contact.last_name = line.strip().split(";")[0].split(":")[1]
+            elif(line.strip().startswith("EMAIL;type=INTERNET;type=HOME")):
+                current_contact.email1 = line.strip().split(":")[1]
+            elif(line.strip().startswith("EMAIL;type=INTERNET;type=WORK")):
+                current_contact.email1 = line.strip().split(":")[1]
+            elif(line.strip().startswith("TEL;type=HOME")):
+                current_contact.home_phone = line.strip().split(":")[1]
+            elif(line.strip().startswith("TEL;type=WORK")):
+                current_contact.work_phone = line.strip().split(":")[1]
+            elif(line.strip().startswith("TEL;type=CELL")):
+                current_contact.mobile_phone = line.strip().split(":")[1]
+            elif(line.strip().startswith()):
+                pass
+    file_to_import.set("")
+    messagebox.showinfo("Status", "Contacts Successfully Converted")
+    
     
     
 
