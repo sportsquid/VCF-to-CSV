@@ -52,8 +52,15 @@ def select_import_file():
     )
     file_to_import.set(file_path)
 
-def write_contact(contact):
-    pass
+def write_contact(contact, filepath):
+    with open(filepath, 'w') as file:
+        file.write(f"{contact.first_name}, {contact.last_name}, {contact.display_name}, {contact.nickname}, {contact.email1}, {contact.email2}, " \
+                    f"{contact.email3}, {contact.home_phone}, {contact.business_phone}, {contact.home_fax}, {contact.business_fax}, {contact.pager}," \
+                    f"{contact.mobile_phone}, {contact.home_street}, {contact.home_address2}, {contact.home_city}, {contact.home_state}, {contact.home_postal}," \
+                    f"{contact.home_country}, {contact.business_address}, {contact.business_address_2}, {contact.business_city}, {contact.business_state}, {contact.business_postal}, {contact.business_country}, {contact.country_code}, {contact.related_name}," \
+                    f"{contact.job_title}, {contact.department}, {contact.organization}, {contact.notes}, {contact.birthday}, {contact.anniversary}," \
+                    f"{contact.gender}, {contact.web_page}, {contact.web_page2}, {contact.categories}")
+        return 
 
 #function to convert the CSV 
 def convert_contacts():
@@ -66,14 +73,21 @@ def convert_contacts():
     if(file_path == ""):
         convert_contacts()
         return
-    
+    #write first line in CSV
+    with open(file_path, 'w') as file:
+        file.write("First Name,Last Name,Display Name,Nickname,E-mail Address,E-mail 2 Address,E-mail 3 Address,Home Phone,Business Phone,Home" \
+                   "Fax,Business Fax,Pager,Mobile Phone,Home Street,Home Address 2,Home City,Home State,Home Postal Code,Home Country,Business Address," \
+                   "Business Address 2,Business City,Business State,Business Postal Code,Business Country,Country Code,Related name,Job Title,Department,Organization," \
+                   "Notes,Birthday,Anniversary,Gender,Web Page,Web Page 2,Categories")
+
     #load entire file into list
     lines = []
     with open(file_to_import, 'r') as file:
        current_contact = Contact()
        for line in file:
            if(line.strip() == "END:VCARD"):
-               pass
+               write_contact(current_contact, file_path)
+               current_contact = Contact()
            elif (line.strip().startswith("N:") != -1):
                pass
                 
