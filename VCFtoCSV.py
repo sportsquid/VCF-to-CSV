@@ -43,6 +43,7 @@ class Contact:
     web_page_2 = ""
     categories = ""
 
+#function to handle import file dialogue 
 def select_import_file():
     file_path = filedialog.askopenfilename(
     title="Select a file",
@@ -51,10 +52,24 @@ def select_import_file():
     )
     file_to_import.set(file_path)
 
+#function to convert the CSV 
 def convert_contacts():
-    pass
+    file_path = filedialog.asksaveasfilename(
+    title="Save contacts as...",
+    defaultextension=".csv",
+    filetypes=[("CSV", "*.csv")],
+    initialdir="C:\\",
+    )
+    if(file_path == ""):
+        convert_contacts()
+        return
+    with open(file_to_import, 'r') as file:
+        for line in file:
+            pass
     
 
+
+#Create Window
 root = tk.Tk()
 root.title("Altorfer iPhone Contact Converter")
 mainframe = ttk.Frame(root, padding="3 3 12 12")
@@ -63,10 +78,9 @@ root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=1)
 file_to_import = tk.StringVar()
 
-#import file UI
+#Basic UI layout
 ttk.Label(mainframe, text="Import Contacts:").grid(row=1, column=1)
-import_entry = ttk.Entry(mainframe, width=75, textvariable=file_to_import)
-import_entry.grid(column=1, row=2, sticky=tk.W)
+import_entry = ttk.Entry(mainframe, width=75, textvariable=file_to_import).grid(column=1, row=2, sticky=tk.W)
 ttk.Button(mainframe, text="Select File...", command=select_import_file).grid(row=2, column=2)
 ttk.Button(mainframe, text="Convert", command=convert_contacts).grid(row=3, column=1)
 
