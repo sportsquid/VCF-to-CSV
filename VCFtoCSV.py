@@ -25,18 +25,18 @@ class Contact:
     home_state = "" #supported
     home_postal = "" #supported
     home_country = "" #supported
-    business_address = ""
+    business_address = "" #supported
     business_address_2 = ""
-    business_city = ""
-    business_state = ""
-    business_postal = ""
-    business_country = ""
+    business_city = "" #supported
+    business_state = "" #supported
+    business_postal = "" #supported
+    business_country = "" #supported
     country_code = ""
     related_name = ""
     job_title = ""
     department = ""
     organization = "" #supported
-    notes = ""
+    notes = "" #supported
     birthday = ""
     anniversary = ""
     gender = ""
@@ -84,41 +84,56 @@ def convert_contacts():
     #load entire file into list
     lines = []
     with open(file_to_import.get(), 'r') as file:
-       current_contact = Contact()
-       for line in file:
-            if(line.strip() == "END:VCARD"):
-                write_contact(current_contact, file_path)
-                current_contact = Contact()
-            #first and last name
-            elif (line.strip().startswith("N:")):
-                current_contact.first_name = line.strip().split(";")[1]
-                current_contact.last_name = line.strip().split(";")[0].split(":")[1]
-            #home email
-            elif(line.strip().startswith("EMAIL;type=INTERNET;type=HOME")):
-                current_contact.email1 = line.strip().split(":")[1]
-            #work email
-            elif(line.strip().startswith("EMAIL;type=INTERNET;type=WORK")):
-                current_contact.email1 = line.strip().split(":")[1]
-            #home phone
-            elif(line.strip().startswith("TEL;type=HOME")):
-                current_contact.home_phone = line.strip().split(":")[1]
-            #work phone
-            elif(line.strip().startswith("TEL;type=WORK")):
-                current_contact.work_phone = line.strip().split(":")[1]
-            #cell phone
-            elif(line.strip().startswith("TEL;type=CELL")):
-                current_contact.mobile_phone = line.strip().split(":")[1]
-            #home address
-            elif(line.strip().startswith("item1.ADR;type=HOME")):
-                current_contact.home_street = line.strip().split(";")[4].replace("\\n", " ")
-                current_contact.home_city = line.strip().split(";")[5]
-                current_contact.home_state = line.strip().split(";")[6]
-                current_contact.home_postal = line.strip().split(";")[7]
-                current_contact.home_country = line.strip().split(";")[8]
-            elif(line.strip().startswith("ORG")):
-                current_contact.organization = line.strip().split(":")[1].replace(";", "")
-    file_to_import.set("")
-    messagebox.showinfo("Status", "Contacts Successfully Converted")
+        current_contact = Contact()
+        try:
+            for line in file:
+                if(line.strip() == "END:VCARD"):
+                    write_contact(current_contact, file_path)
+                    current_contact = Contact()
+                #first and last name
+                elif (line.strip().startswith("N:")):
+                    current_contact.first_name = line.strip().split(";")[1]
+                    current_contact.last_name = line.strip().split(";")[0].split(":")[1]
+                #home email
+                elif(line.strip().startswith("EMAIL;type=INTERNET;type=HOME")):
+                    current_contact.email1 = line.strip().split(":")[1]
+                #work email
+                elif(line.strip().startswith("EMAIL;type=INTERNET;type=WORK")):
+                    current_contact.email1 = line.strip().split(":")[1]
+                #home phone
+                elif(line.strip().startswith("TEL;type=HOME")):
+                    current_contact.home_phone = line.strip().split(":")[1]
+                #work phone
+                elif(line.strip().startswith("TEL;type=WORK")):
+                    current_contact.work_phone = line.strip().split(":")[1]
+                #cell phone
+                elif(line.strip().startswith("TEL;type=CELL")):
+                    current_contact.mobile_phone = line.strip().split(":")[1]
+                #home address
+                elif("ADR;type=HOME" in line.strip()):
+                    current_contact.home_street = line.strip().split(":")[1].split(";")[2].replace("\\n", " ")
+                    current_contact.home_city = line.strip().split(":")[1].split(";")[3]
+                    current_contact.home_state = line.strip().split(":")[1].split(";")[4]
+                    current_contact.home_postal = line.strip().split(":")[1].split(";")[5]
+                    current_contact.home_country = line.strip().split(":")[1].split(";")[6]
+                #business address
+                elif("ADR;type=WORK" in line.strip()): 
+                    current_contact.business_city = line.strip().split(":")[1].split(";")[3]
+                    current_contact.business_state = line.strip().split(":")[1].split(";")[4]
+                    current_contact.business_postal = line.strip().split(":")[1].split(";")[5]
+                    current_contact.business_country = line.strip().split(":")[1].split(";")[6]
+                    current_contact.business_address = f"\"{line.strip().split(":")[1].split(";")[2].replace("\\n", " ")}, {current_contact.business_city}, " \
+                        f"{current_contact.business_state}, {current_contact.business_postal}, {current_contact.business_country}\""
+                #organization
+                elif(line.strip().startswith("ORG")):
+                    current_contact.organization = line.strip().split(":")[1].replace(";", "")
+                elif(line.strip().startswith("NOTES:")):
+                    current_contact.notes = f"\"{line.strip()[6:]}\""
+        except Exception as err:
+            messagebox.showinfo("Status", "An error has occured processing this file. Please contact IT")
+        else:
+            file_to_import.set("")
+            messagebox.showinfo("Status", "Contacts Successfully Converted")
     
     
     
