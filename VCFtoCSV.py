@@ -15,9 +15,9 @@ class Contact:
     email3 = ""
     home_phone= "" #supported
     business_phone = "" #supported
-    home_fax = ""
-    business_fax = ""
-    pager = ""
+    home_fax = "" #supported
+    business_fax = "" #supported
+    pager = "" #supported
     mobile_phone = "" #supported
     home_street = "" #supported
     home_address_2 = ""
@@ -33,14 +33,14 @@ class Contact:
     business_country = "" #supported
     country_code = ""
     related_name = ""
-    job_title = ""
-    department = ""
+    job_title = "" #supported
+    department = "" #supported
     organization = "" #supported
     notes = "" #supported
-    birthday = ""
+    birthday = "" #supported
     anniversary = ""
     gender = ""
-    web_page = ""
+    web_page = "" #supported
     web_page_2 = ""
     categories = ""
 
@@ -54,7 +54,7 @@ def select_import_file():
     file_to_import.set(file_path)
 
 def write_contact(contact, filepath):
-    with open(filepath, 'a') as file:
+    with open(filepath, 'a', encoding="utf-8") as file:
         file.write(f"{contact.first_name},{contact.last_name},{contact.display_name},{contact.nickname},{contact.email1},{contact.email2}," \
                     f"{contact.email3},{contact.home_phone},{contact.business_phone},{contact.home_fax},{contact.business_fax},{contact.pager}," \
                     f"{contact.mobile_phone},{contact.home_street},{contact.home_address_2},{contact.home_city},{contact.home_state},{contact.home_postal}," \
@@ -75,7 +75,7 @@ def convert_contacts():
         convert_contacts()
         return
     #write first line in CSV
-    with open(file_path, 'w') as file:
+    with open(file_path, 'w', encoding="utf-8") as file:
         file.write("First Name,Last Name,Display Name,Nickname,E-mail Address,E-mail 2 Address,E-mail 3 Address,Home Phone,Business Phone,Home" \
                    "Fax,Business Fax,Pager,Mobile Phone,Home Street,Home Address 2,Home City,Home State,Home Postal Code,Home Country,Business Address," \
                    "Business Address 2,Business City,Business State,Business Postal Code,Business Country,Country Code,Related name,Job Title,Department,Organization," \
@@ -83,7 +83,7 @@ def convert_contacts():
 
     #load entire file into list
     lines = []
-    with open(file_to_import.get(), 'r') as file:
+    with open(file_to_import.get(), 'r', encoding="utf-8") as file:
         current_contact = Contact()
         try:
             for line in file:
@@ -101,14 +101,25 @@ def convert_contacts():
                 elif(line.strip().startswith("EMAIL;type=INTERNET;type=WORK")):
                     current_contact.email1 = line.strip().split(":")[1]
                 #home phone
-                elif(line.strip().startswith("TEL;type=HOME")):
+                elif(line.strip().startswith("TEL;type=HOME") and ("type=FAX" not in line.strip())):
                     current_contact.home_phone = line.strip().split(":")[1]
                 #work phone
-                elif(line.strip().startswith("TEL;type=WORK")):
+                elif(line.strip().startswith("TEL;type=WORK") and ("type=FAX" not in line.strip())):
                     current_contact.work_phone = line.strip().split(":")[1]
                 #cell phone
                 elif(line.strip().startswith("TEL;type=CELL")):
                     current_contact.mobile_phone = line.strip().split(":")[1]
+                elif(line.strip().startswith("TEL;type=pref")):
+                    current_contact.mobile_phone = line.strip().split(":")[1]
+                #pager
+                elif(line.strip().startswith("TEL;type=PAGER;")):
+                    current_contact.pager = line.strip().split(":")[1]
+                #home fax
+                elif(line.strip().startswith("TEL;type=HOME;type=FAX")):
+                    current_contact.home_fax = line.strip().split(":")[1]
+                #work fax
+                elif(line.strip().startswith("TEL;type=WORK;type=FAX")):
+                    current_contact.business_fax = line.strip().split(":")[1]
                 #home address
                 elif("ADR;type=HOME" in line.strip()):
                     current_contact.home_street = line.strip().split(":")[1].split(";")[2].replace("\\n", " ")
@@ -126,9 +137,19 @@ def convert_contacts():
                         f"{current_contact.business_state}, {current_contact.business_postal}, {current_contact.business_country}\""
                 #organization
                 elif(line.strip().startswith("ORG")):
-                    current_contact.organization = line.strip().split(":")[1].replace(";", "")
-                elif(line.strip().startswith("NOTES:")):
-                    current_contact.notes = f"\"{line.strip()[6:]}\""
+                    current_contact.organization = line.strip().split(":")[1].split(";")[0].strip()
+                    current_contact.department = line.strip().split(":")[1].split(";")[1].strip()
+                #job title
+                elif(line.strip().startswith("TITLE:")):
+                    current_contact.job_title = line.strip().split(":")[1]
+                elif(line.strip().startswith("NOTE:")):
+                    current_contact.notes = f"\"{line.strip()[5:]}\""
+                #birthday
+                elif(line.strip().startswith("BDAY:")):
+                    current_contact.birthday = line.strip().split(":")[1]
+                #website
+                elif("URL;" in line.strip()):
+                    current_contact.web_page = line.strip().split(":")[1]
         except Exception as err:
             messagebox.showinfo("Status", "An error has occured processing this file. Please contact IT")
         else:
@@ -142,6 +163,7 @@ def convert_contacts():
 #Create Window
 root = tk.Tk()
 root.title("Altorfer iPhone Contact Converter")
+root.iconbitmap("./Contact Converter.ico")
 mainframe = ttk.Frame(root, padding="3 3 12 12")
 mainframe.grid(row=3, column=2)
 root.columnconfigure(0, weight=1)
