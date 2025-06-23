@@ -96,62 +96,62 @@ def convert_contacts():
                     current_contact.last_name = line.strip().split(";")[0].split(":")[1]
                 #home email
                 elif(line.strip().startswith("EMAIL;type=INTERNET;type=HOME")):
-                    current_contact.email1 = line.strip().split(":")[1]
+                    current_contact.email1 = line.strip().split(":", 1)[1]
                 #work email
                 elif(line.strip().startswith("EMAIL;type=INTERNET;type=WORK")):
-                    current_contact.email1 = line.strip().split(":")[1]
+                    current_contact.email1 = line.strip().split(":", 1)[1]
                 #home phone
                 elif(line.strip().startswith("TEL;type=HOME") and ("type=FAX" not in line.strip())):
-                    current_contact.home_phone = line.strip().split(":")[1]
+                    current_contact.home_phone = line.strip().split(":", 1)[1]
                 #work phone
                 elif(line.strip().startswith("TEL;type=WORK") and ("type=FAX" not in line.strip())):
-                    current_contact.work_phone = line.strip().split(":")[1]
+                    current_contact.work_phone = line.strip().split(":", 1)[1]
                 #cell phone
                 elif(line.strip().startswith("TEL;type=CELL")):
-                    current_contact.mobile_phone = line.strip().split(":")[1]
+                    current_contact.mobile_phone = line.strip().split(":", 1)[1]
                 elif(line.strip().startswith("TEL;type=pref")):
-                    current_contact.mobile_phone = line.strip().split(":")[1]
+                    current_contact.mobile_phone = line.strip().split(":", 1)[1]
                 #pager
                 elif(line.strip().startswith("TEL;type=PAGER;")):
-                    current_contact.pager = line.strip().split(":")[1]
+                    current_contact.pager = line.strip().split(":", 1)[1]
                 #home fax
                 elif(line.strip().startswith("TEL;type=HOME;type=FAX")):
-                    current_contact.home_fax = line.strip().split(":")[1]
+                    current_contact.home_fax = line.strip().split(":", 1)[1]
                 #work fax
                 elif(line.strip().startswith("TEL;type=WORK;type=FAX")):
-                    current_contact.business_fax = line.strip().split(":")[1]
+                    current_contact.business_fax = line.strip().split(":", 1)[1]
                 #home address
                 elif("ADR;type=HOME" in line.strip()):
-                    current_contact.home_street = line.strip().split(":")[1].split(";")[2].replace("\\n", " ")
-                    current_contact.home_city = line.strip().split(":")[1].split(";")[3]
-                    current_contact.home_state = line.strip().split(":")[1].split(";")[4]
-                    current_contact.home_postal = line.strip().split(":")[1].split(";")[5]
-                    current_contact.home_country = line.strip().split(":")[1].split(";")[6]
+                    current_contact.home_street = line.strip().split(":", 1)[1].split(";")[2].replace("\\n", " ")
+                    current_contact.home_city = line.strip().split(":", 1)[1].split(";")[3]
+                    current_contact.home_state = line.strip().split(":", 1)[1].split(";")[4]
+                    current_contact.home_postal = line.strip().split(":", 1)[1].split(";")[5]
+                    current_contact.home_country = line.strip().split(":", 1)[1].split(";")[6]
                 #business address
                 elif("ADR;type=WORK" in line.strip()): 
-                    current_contact.business_city = line.strip().split(":")[1].split(";")[3]
-                    current_contact.business_state = line.strip().split(":")[1].split(";")[4]
-                    current_contact.business_postal = line.strip().split(":")[1].split(";")[5]
-                    current_contact.business_country = line.strip().split(":")[1].split(";")[6]
-                    current_contact.business_address = f"\"{line.strip().split(":")[1].split(";")[2].replace("\\n", " ")}, {current_contact.business_city}, " \
+                    current_contact.business_city = line.strip().split(":", 1)[1].split(";")[3]
+                    current_contact.business_state = line.strip().split(":", 1)[1].split(";")[4]
+                    current_contact.business_postal = line.strip().split(":", 1)[1].split(";")[5]
+                    current_contact.business_country = line.strip().split(":", 1)[1].split(";")[6]
+                    current_contact.business_address = f"\"{line.strip().split(":", 1)[1].split(";")[2].replace("\\n", " ")}, {current_contact.business_city}, " \
                         f"{current_contact.business_state}, {current_contact.business_postal}, {current_contact.business_country}\""
                 #organization
                 elif(line.strip().startswith("ORG")):
-                    current_contact.organization = line.strip().split(":")[1].split(";")[0].strip()
-                    current_contact.department = line.strip().split(":")[1].split(";")[1].strip()
+                    current_contact.organization = line.strip().split(":", 1)[1].split(";")[0].strip()
+                    current_contact.department = line.strip().split(":", 1)[1].split(";")[1].strip()
                 #job title
                 elif(line.strip().startswith("TITLE:")):
-                    current_contact.job_title = line.strip().split(":")[1]
+                    current_contact.job_title = line.strip().split(":", 1)[1]
                 elif(line.strip().startswith("NOTE:")):
                     current_contact.notes = f"\"{line.strip()[5:]}\""
                 #birthday
                 elif(line.strip().startswith("BDAY:")):
-                    current_contact.birthday = line.strip().split(":")[1]
+                    current_contact.birthday = line.strip().split(":", 1)[1]
                 #website
                 elif("URL;" in line.strip()):
-                    current_contact.web_page = line.strip().split(":")[1]
+                    current_contact.web_page = line.strip().split(":", 1)[1]
         except Exception as err:
-            messagebox.showinfo("Status", f"An error has occured processing this file. Please contact IT. \n {err}")
+            messagebox.showinfo("Status", f"An error has occured processing this file. Please contact IT. \n {err}, {line}")
         else:
             file_to_import.set("")
             messagebox.showinfo("Status", "Contacts Successfully Converted")
