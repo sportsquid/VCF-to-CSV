@@ -151,7 +151,7 @@ def convert_contacts():
                 elif("URL;" in line.strip()):
                     current_contact.web_page = line.strip().split(":")[1]
         except Exception as err:
-            messagebox.showinfo("Status", "An error has occured processing this file. Please contact IT")
+            messagebox.showinfo("Status", f"An error has occured processing this file. Please contact IT. \n {err}")
         else:
             file_to_import.set("")
             messagebox.showinfo("Status", "Contacts Successfully Converted")
