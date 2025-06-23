@@ -105,7 +105,7 @@ def convert_contacts():
                     current_contact.home_phone = line.strip().split(":", 1)[1]
                 #work phone
                 elif(line.strip().startswith("TEL;type=WORK") and ("type=FAX" not in line.strip())):
-                    current_contact.work_phone = line.strip().split(":", 1)[1]
+                    current_contact.business_phone = line.strip().split(":", 1)[1]
                 #cell phone
                 elif(line.strip().startswith("TEL;type=CELL")):
                     current_contact.mobile_phone = line.strip().split(":", 1)[1]
@@ -135,8 +135,10 @@ def convert_contacts():
                     current_contact.business_country = line.strip().split(":", 1)[1].split(";")[6]
                     current_contact.business_address = f"\"{line.strip().split(":", 1)[1].split(";")[2].replace("\\n", " ")}, {current_contact.business_city}, " \
                         f"{current_contact.business_state}, {current_contact.business_postal}, {current_contact.business_country}\""
+                    if(", , , ," in current_contact.business_address):
+                        current_contact.business_address = ""
                 #organization
-                elif(line.strip().startswith("ORG")):
+                elif(line.strip().startswith("ORG:")):
                     current_contact.organization = line.strip().split(":", 1)[1].split(";")[0].strip()
                     current_contact.department = line.strip().split(":", 1)[1].split(";")[1].strip()
                 #job title
